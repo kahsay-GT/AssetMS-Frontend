@@ -34,7 +34,7 @@ interface NavItem  { label: string; icon: string; route: string; roles?: string[
         <!-- Brand header -->
         <div class="sb-brand">
           <div class="sb-brand-logo">
-            <img src="logo.png" alt="Raras Technologies" class="sb-logo-img" />
+            <mat-icon>inventory_2</mat-icon>
           </div>
           <div class="sb-brand-text" *ngIf="sidebarOpen()">
             <span class="sb-brand-name">AssetMS</span>
@@ -77,43 +77,7 @@ interface NavItem  { label: string; icon: string; route: string; roles?: string[
         </nav>
 
         <!-- User footer -->
-        @if (currentUser) {
-          <div class="sb-footer">
-            <div class="sb-footer-divider"></div>
-            @if (sidebarOpen()) {
-              <div class="sb-user" [matMenuTriggerFor]="sidebarMenu">
-                <div class="sb-user-avatar">{{ initials }}</div>
-                <div class="sb-user-info">
-                  <span class="sb-user-name">{{ currentUser.fullName }}</span>
-                  <span class="sb-user-role" [style.color]="roleAccent(currentUser.roles[0])">
-                    {{ currentUser.roles[0] }}
-                  </span>
-                </div>
-                <mat-icon class="sb-user-chevron">unfold_more</mat-icon>
-              </div>
-            } @else {
-              <div class="sb-user-collapsed" [matMenuTriggerFor]="sidebarMenu"
-                   [matTooltip]="currentUser.fullName" matTooltipPosition="right">
-                <div class="sb-user-avatar">{{ initials }}</div>
-              </div>
-            }
-
-            <mat-menu #sidebarMenu="matMenu" xPosition="after">
-              <div class="sb-menu-profile">
-                <div class="sb-menu-avatar">{{ initials }}</div>
-                <div>
-                  <p class="sb-menu-name">{{ currentUser.fullName }}</p>
-                  <p class="sb-menu-email">{{ currentUser.email }}</p>
-                </div>
-              </div>
-              <mat-divider></mat-divider>
-              <button mat-menu-item (click)="logout()">
-                <mat-icon style="color:#ef4444">logout</mat-icon>
-                <span>Sign Out</span>
-              </button>
-            </mat-menu>
-          </div>
-        }
+        
       </mat-sidenav>
 
       <!-- ═══════════════════════════════════════════════════════════
@@ -202,15 +166,15 @@ interface NavItem  { label: string; icon: string; route: string; roles?: string[
 
     .sb-brand-logo {
       width: 40px; height: 40px; flex-shrink: 0;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
-    }
+      box-shadow: 0 4px 12px rgba(99,102,241,0.4);
 
-    .sb-logo-img {
-      height: 36px;
-      width: auto;
-      object-fit: contain;
-      filter: brightness(0) invert(1);
-      opacity: 0.9;
+      mat-icon {
+        font-size: 22px; width: 22px; height: 22px;
+        color: #fff;
+      }
     }
 
     .sb-brand-text {
