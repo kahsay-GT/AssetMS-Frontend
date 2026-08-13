@@ -39,4 +39,8 @@ export class UserService {
   assignRoles(id: string, data: AssignRolesRequest): Observable<void> {
     return this.http.put<void>(`${this.base}/${id}/roles`, data);
   }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${id}`);
+  }
 }

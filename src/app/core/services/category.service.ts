@@ -31,4 +31,8 @@ export class CategoryService {
   archive(id: string): Observable<void> {
     return this.http.delete<void>(`${this.base}/${id}`);
   }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${id}/permanent`);
+  }
 }

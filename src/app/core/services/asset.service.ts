@@ -42,6 +42,10 @@ export class AssetService {
   }
 
   archiveAsset(id: string): Observable<void> {
+    return this.http.patch<void>(`${this.base}/${id}/archive`, {});
+  }
+
+  deleteAsset(id: string): Observable<void> {
     return this.http.delete<void>(`${this.base}/${id}`);
   }
 
