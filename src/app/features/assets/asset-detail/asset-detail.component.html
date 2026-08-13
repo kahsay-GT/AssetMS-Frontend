@@ -2,169 +2,273 @@
   <app-loading-spinner message="Loading asset details…" />
 } @else if (asset) {
 
-<!-- ── Header ──────────────────────────────────────────────────────────── -->
-<div class="detail-header fade-in">
-  <div>
-    <div class="detail-badge"><mat-icon style="font-size:14px;width:14px;height:14px">tag</mat-icon>{{ asset.assetNumber }}</div>
-    <h1 class="detail-name">{{ asset.name }}</h1>
-    <div class="flex items-center gap-8 mt-2">
-      <app-status-chip [status]="asset.status" />
-      <span style="font-size:12.5px;color:#94a3b8">{{ asset.categoryName }}</span>
-      <span style="font-size:12.5px;color:#94a3b8">{{ asset.organizationUnitName }}</span>
-      @if (asset.isArchived) {
-        <span style="background:#f1f5f9;color:#64748b;font-size:11px;padding:2px 8px;border-radius:4px;font-weight:600">ARCHIVED</span>
-      }
+<!-- ── Header ─────────────────────────────────────────────────────── -->
+<div class="ad-header fade-in">
+  <div class="ad-header-left">
+    <a routerLink="/assets" class="ad-back-link">
+      <mat-icon>arrow_back</mat-icon> Back to Assets
+    </a>
+    <div class="ad-title-row">
+      <span class="ad-asset-num"><mat-icon>tag</mat-icon>{{ asset.assetNumber }}</span>
+      <h1 class="ad-title">{{ asset.name }}</h1>
+      <div class="ad-badges">
+        <app-status-chip [status]="asset.status" />
+        <span class="ad-category-badge">{{ asset.categoryName }}</span>
+        @if (asset.isArchived) { <span class="ad-archived-badge">Archived</span> }
+      </div>
     </div>
   </div>
-  <div class="detail-actions">
-    @if (canManage) {
+  @if (canManage) {
+    <div class="ad-header-actions">
       <a mat-stroked-button [routerLink]="['/assets', asset.id, 'edit']">
         <mat-icon>edit</mat-icon> Edit
       </a>
-      <button mat-stroked-button (click)="showStatusDialog = true">
+      <button mat-stroked-button (click)="showStatusDialog=true">
         <mat-icon>swap_horiz</mat-icon> Status
       </button>
       <button mat-stroked-button (click)="openAssignDialog()">
         <mat-icon>move_down</mat-icon> Reassign
       </button>
-    }
-    <a mat-button routerLink="/assets"><mat-icon>arrow_back</mat-icon> Back</a>
-  </div>
+      <a mat-button routerLink="/assets"><mat-icon>close</mat-icon></a>
+    </div>
+  }
 </div>
 
-<!-- ── Tabs ───────────────────────────────────────────────────────────── -->
-<mat-tab-group animationDuration="150ms" class="fade-in">
+<!-- ── Tab group ──────────────────────────────────────────────────── -->
+<mat-tab-group animationDuration="150ms" class="ad-tabs fade-in">
 
-  <!-- Overview Tab -->
+  <!-- ════════════════════════════════════════════════════
+       TAB 1 — OVERVIEW
+  ════════════════════════════════════════════════════ -->
   <mat-tab>
-    <ng-template mat-tab-label><mat-icon class="tab-icon">info</mat-icon> Overview</ng-template>
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 pt-2">
+    <ng-template mat-tab-label>
+      <mat-icon class="tab-icon">info</mat-icon> Overview
+    </ng-template>
 
-      <!-- Left: details -->
-      <div class="lg:col-span-2 flex flex-col gap-4">
+    <div class="tab-body">
+      <div class="overview-grid">
 
-        <!-- Basic Info -->
-        <div class="section-card">
-          <div class="section-header">
-            <h3 class="section-title"><mat-icon style="color:#4f46e5;font-size:16px;width:16px;height:16px">info</mat-icon> Basic Information</h3>
+        <!-- Left: details -->
+        <div class="overview-left">
+
+          <!-- Basic info -->
+          <div class="info-card">
+            <div class="info-card-header">
+              <span class="info-card-icon" style="background:#ede9fe"><mat-icon style="color:#7c3aed">info</mat-icon></span>
+              <span class="info-card-title">Basic Information</span>
+            </div>
+            <div class="info-card-body">
+              <div class="field-grid">
+                <div class="field col-2">
+                  <span class="field-label">Asset Name</span>
+                  <span class="field-value" style="font-weight:700">{{ asset.name }}</span>
+                </div>
+                <div class="field">
+                  <span class="field-label">Category</span>
+                  <span class="field-value">{{ asset.categoryName }}</span>
+                </div>
+                <div class="field">
+                  <span class="field-label">Asset Number</span>
+                  <span class="field-value font-mono">{{ asset.assetNumber }}</span>
+                </div>
+                <div class="field col-2">
+                  <span class="field-label">Description</span>
+                  <span class="field-value">{{ asset.description || '—' }}</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="section-body">
-            <div class="info-grid">
-              <div class="info-item"><span class="field-label">Asset Name</span><span class="field-value font-semibold">{{ asset.name }}</span></div>
-              <div class="info-item"><span class="field-label">Category</span><span class="field-value">{{ asset.categoryName }}</span></div>
-              <div class="info-item col-span-2"><span class="field-label">Description</span><span class="field-value">{{ asset.description || '—' }}</span></div>
+
+          <!-- Identification -->
+          <div class="info-card">
+            <div class="info-card-header">
+              <span class="info-card-icon" style="background:#e0f2fe"><mat-icon style="color:#0284c7">fingerprint</mat-icon></span>
+              <span class="info-card-title">Identification</span>
+            </div>
+            <div class="info-card-body">
+              <div class="field-grid">
+                <div class="field">
+                  <span class="field-label">Serial Number</span>
+                  <span class="field-value font-mono">{{ asset.serialNumber || '—' }}</span>
+                </div>
+                <div class="field">
+                  <span class="field-label">Manufacturer</span>
+                  <span class="field-value">{{ asset.manufacturer || '—' }}</span>
+                </div>
+                <div class="field">
+                  <span class="field-label">Model</span>
+                  <span class="field-value">{{ asset.model || '—' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Financial -->
+          <div class="info-card">
+            <div class="info-card-header">
+              <span class="info-card-icon" style="background:#dcfce7"><mat-icon style="color:#15803d">payments</mat-icon></span>
+              <span class="info-card-title">Financial Information</span>
+            </div>
+            <div class="info-card-body">
+              <div class="field-grid">
+                <div class="field">
+                  <span class="field-label">Purchase Date</span>
+                  <span class="field-value">{{ asset.purchaseDate ? (asset.purchaseDate | date:'MMM d, y') : '—' }}</span>
+                </div>
+                <div class="field">
+                  <span class="field-label">Purchase Cost</span>
+                  <span class="field-value" style="font-size:20px;font-weight:800;color:#15803d;">
+                    {{ asset.purchaseCost != null ? (asset.purchaseCost | currency) : '—' }}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Identification -->
-        <div class="section-card">
-          <div class="section-header">
-            <h3 class="section-title"><mat-icon style="color:#0891b2;font-size:16px;width:16px;height:16px">fingerprint</mat-icon> Identification</h3>
+        <!-- Right: status + org -->
+        <div class="overview-right">
+
+          <!-- Status -->
+          <div class="info-card">
+            <div class="info-card-header">
+              <span class="info-card-icon" style="background:#fef3c7"><mat-icon style="color:#b45309">circle</mat-icon></span>
+              <span class="info-card-title">Status</span>
+            </div>
+            <div class="info-card-body">
+              <div style="margin-bottom:14px"><app-status-chip [status]="asset.status" /></div>
+              <div class="field-grid" style="grid-template-columns:1fr">
+                <div class="field">
+                  <span class="field-label">Created</span>
+                  <span class="field-value">{{ asset.createdAt | date:'MMM d, y' }}</span>
+                </div>
+                <div class="field">
+                  <span class="field-label">Last Updated</span>
+                  <span class="field-value">{{ asset.updatedAt | date:'MMM d, y · HH:mm' }}</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="section-body">
-            <div class="info-grid">
-              <div class="info-item"><span class="field-label">Serial Number</span><span class="field-value font-mono">{{ asset.serialNumber || '—' }}</span></div>
-              <div class="info-item"><span class="field-label">Manufacturer</span><span class="field-value">{{ asset.manufacturer || '—' }}</span></div>
-              <div class="info-item"><span class="field-label">Model</span><span class="field-value">{{ asset.model || '—' }}</span></div>
+
+          <!-- Organization -->
+          <div class="info-card">
+            <div class="info-card-header">
+              <span class="info-card-icon" style="background:#ede9fe"><mat-icon style="color:#7c3aed">account_tree</mat-icon></span>
+              <span class="info-card-title">Organization</span>
+            </div>
+            <div class="info-card-body">
+              <div class="field-grid" style="grid-template-columns:1fr">
+                <div class="field">
+                  <span class="field-label">Current Unit</span>
+                  <span class="field-value" style="font-weight:700">{{ asset.organizationUnitName }}</span>
+                </div>
+                <div class="field">
+                  <span class="field-label">Full Path</span>
+                  <div class="org-path">
+                    @for (seg of orgPathSegments; track seg; let last = $last) {
+                      <span class="path-seg">{{ seg }}</span>
+                      @if (!last) { <mat-icon class="path-sep">chevron_right</mat-icon> }
+                    }
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Financial -->
-        <div class="section-card">
-          <div class="section-header">
-            <h3 class="section-title"><mat-icon style="color:#059669;font-size:16px;width:16px;height:16px">attach_money</mat-icon> Financial</h3>
-          </div>
-          <div class="section-body">
-            <div class="info-grid">
-              <div class="info-item"><span class="field-label">Purchase Date</span><span class="field-value">{{ asset.purchaseDate ? (asset.purchaseDate | date:'MMM d, y') : '—' }}</span></div>
-              <div class="info-item"><span class="field-label">Purchase Cost</span><span class="field-value font-semibold text-lg">{{ asset.purchaseCost != null ? (asset.purchaseCost | currency) : '—' }}</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right sidebar -->
-      <div class="flex flex-col gap-4">
-
-        <!-- Status card -->
-        <div class="section-card">
-          <div class="section-header">
-            <h3 class="section-title"><mat-icon style="color:#d97706;font-size:16px;width:16px;height:16px">circle</mat-icon> Status</h3>
-          </div>
-          <div class="section-body flex flex-col gap-4">
-            <div><app-status-chip [status]="asset.status" /></div>
-            <div class="info-item"><span class="field-label">Created</span><span class="field-value">{{ asset.createdAt | date:'MMM d, y' }}</span></div>
-            <div class="info-item"><span class="field-label">Last Updated</span><span class="field-value">{{ asset.updatedAt | date:'MMM d, y · HH:mm' }}</span></div>
-          </div>
-        </div>
-
-        <!-- Organization card -->
-        <div class="section-card">
-          <div class="section-header">
-            <h3 class="section-title"><mat-icon style="color:#7c3aed;font-size:16px;width:16px;height:16px">account_tree</mat-icon> Organization</h3>
-          </div>
-          <div class="section-body flex flex-col gap-3">
-            <div class="info-item">
-              <span class="field-label">Current Unit</span>
-              <span class="field-value font-semibold">{{ asset.organizationUnitName }}</span>
-            </div>
-            <div class="info-item">
-              <span class="field-label">Full Path</span>
-              <span class="org-path">{{ asset.organizationUnitPath || asset.organizationUnitName }}</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </mat-tab>
 
-  <!-- Documents Tab -->
+  <!-- ════════════════════════════════════════════════════
+       TAB 2 — DOCUMENTS
+  ════════════════════════════════════════════════════ -->
   <mat-tab>
-    <ng-template mat-tab-label><mat-icon class="tab-icon">attach_file</mat-icon> Documents ({{ documents.length }})</ng-template>
-    <div class="pt-2">
-      @if (canManage) {
-        <input #fileInput type="file" class="hidden" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx" (change)="onFileSelected($event)" />
-        <div class="upload-zone mb-4" (click)="fileInput.click()">
-          <mat-icon style="font-size:36px;width:36px;height:36px;color:#a5b4fc;margin-bottom:8px">cloud_upload</mat-icon>
-          <p style="font-size:14px;font-weight:600;color:#475569;margin:0 0 4px">Click to upload a document</p>
-          <p style="font-size:12px;color:#94a3b8;margin:0">PDF, Word, Excel, Images — max 20 MB</p>
-        </div>
+    <ng-template mat-tab-label>
+      <mat-icon class="tab-icon">attach_file</mat-icon>
+      Documents
+      @if (documents.length > 0) {
+        <span class="tab-badge">{{ documents.length }}</span>
       }
+    </ng-template>
+
+    <div class="tab-body">
+
+      <!-- Upload progress -->
       @if (uploadingDoc) {
-        <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#eff6ff;border-radius:8px;margin-bottom:12px;font-size:13px;color:#1d4ed8;">
-          <mat-spinner diameter="20"></mat-spinner> Uploading document…
+        <div class="upload-progress">
+          <mat-spinner diameter="20"></mat-spinner>
+          <span>Uploading document…</span>
         </div>
       }
-      @if (docLoading) { <app-loading-spinner [diameter]="32" /> }
-      @else if (documents.length === 0) {
-        <div class="empty-state">
+
+      <!-- Upload zone -->
+      @if (canManage) {
+        <input id="fileUploadInput" type="file" class="hidden"
+          accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
+          (change)="onFileSelected($event)" />
+
+        <div class="upload-zone" (click)="triggerUpload()" role="button" tabindex="0"
+          (keydown.enter)="triggerUpload()">
+          <div class="upload-zone-icon">
+            <mat-icon>cloud_upload</mat-icon>
+          </div>
+          <p class="upload-zone-title">Click to upload a document</p>
+          <p class="upload-zone-sub">PDF, Word, Excel, Images — max 20 MB</p>
+        </div>
+      }
+
+      <!-- Document list -->
+      @if (docLoading) {
+        <app-loading-spinner [diameter]="36" message="Loading documents…" />
+      } @else if (documents.length === 0) {
+        <div class="empty-state" style="padding:48px 24px">
           <div class="empty-icon"><mat-icon>insert_drive_file</mat-icon></div>
-          <h3>No documents</h3>
-          <p>Upload invoices, warranties, manuals, and more.</p>
+          <h3>No documents yet</h3>
+          <p>Upload invoices, warranties, manuals and more.</p>
         </div>
       } @else {
         <div class="doc-grid">
           @for (doc of documents; track doc.id) {
             <div class="doc-card">
-              <div style="display:flex;align-items:center;gap:10px;">
-                <div class="doc-icon" [style.background]="fileIconBg(doc.contentType)">
+              <!-- Card top: icon + name -->
+              <div class="doc-card-top">
+                <div class="doc-file-icon" [style.background]="fileIconBg(doc.contentType)">
                   <mat-icon [style.color]="fileIconColor(doc.contentType)">{{ fileIcon(doc.contentType) }}</mat-icon>
                 </div>
-                <div style="flex:1;min-width:0;">
+                <div class="doc-name-wrap">
                   <p class="doc-name" [matTooltip]="doc.originalFileName">{{ doc.originalFileName }}</p>
-                  <p class="doc-meta">{{ doc.documentType }} · {{ doc.fileSizeFormatted }}</p>
+                  <span class="doc-type-badge">{{ doc.documentType }}</span>
                 </div>
               </div>
-              @if (doc.description) { <p style="font-size:12px;color:#64748b;margin:0;">{{ doc.description }}</p> }
-              <p class="doc-meta" style="margin:0;">{{ doc.uploadedByName }} · {{ doc.uploadedAt | date:'MMM d, y' }}</p>
+
+              <!-- Meta -->
+              <div class="doc-meta-row">
+                <span><mat-icon>straighten</mat-icon>{{ doc.fileSizeFormatted }}</span>
+                <span><mat-icon>person</mat-icon>{{ doc.uploadedByName }}</span>
+                <span><mat-icon>schedule</mat-icon>{{ doc.uploadedAt | date:'MMM d, y' }}</span>
+              </div>
+
+              @if (doc.description) {
+                <p class="doc-description">{{ doc.description }}</p>
+              }
+
+              <!-- Actions -->
               <div class="doc-actions">
-                <a mat-stroked-button [href]="getDownloadUrl(doc.id)" target="_blank" style="flex:1;font-size:12px;">
-                  <mat-icon style="font-size:15px;">download</mat-icon> Download
+                <!-- View / Preview inline for images and PDFs -->
+                @if (isPreviewable(doc.contentType)) {
+                  <button mat-stroked-button class="doc-btn" (click)="previewDocument(doc)">
+                    <mat-icon>visibility</mat-icon> Preview
+                  </button>
+                }
+                <!-- Download — authenticated link -->
+                <a mat-raised-button color="primary" class="doc-btn"
+                   (click)="downloadDocument(doc, $event)">
+                  <mat-icon>download</mat-icon> Download
                 </a>
                 @if (canManage) {
-                  <button mat-icon-button color="warn" matTooltip="Delete" (click)="deleteDocument(doc)">
+                  <button mat-icon-button color="warn" matTooltip="Delete document"
+                    (click)="deleteDocument(doc)">
                     <mat-icon>delete_outline</mat-icon>
                   </button>
                 }
@@ -173,19 +277,30 @@
           }
         </div>
       }
+
     </div>
   </mat-tab>
 
-  <!-- History Tab -->
+  <!-- ════════════════════════════════════════════════════
+       TAB 3 — HISTORY
+  ════════════════════════════════════════════════════ -->
   <mat-tab>
-    <ng-template mat-tab-label><mat-icon class="tab-icon">history</mat-icon> History ({{ history.length }})</ng-template>
-    <div class="pt-2">
-      @if (histLoading) { <app-loading-spinner [diameter]="32" /> }
-      @else if (history.length === 0) {
-        <div class="empty-state">
+    <ng-template mat-tab-label>
+      <mat-icon class="tab-icon">history</mat-icon>
+      History
+      @if (history.length > 0) {
+        <span class="tab-badge">{{ history.length }}</span>
+      }
+    </ng-template>
+
+    <div class="tab-body">
+      @if (histLoading) {
+        <app-loading-spinner [diameter]="36" message="Loading history…" />
+      } @else if (history.length === 0) {
+        <div class="empty-state" style="padding:48px 24px">
           <div class="empty-icon"><mat-icon>history</mat-icon></div>
           <h3>No history yet</h3>
-          <p>Changes to this asset will be recorded here.</p>
+          <p>Changes to this asset will appear here.</p>
         </div>
       } @else {
         <div class="timeline">
@@ -193,19 +308,25 @@
             <div class="tl-item">
               <div class="tl-dot" [style.background]="historyColor(h.action)"></div>
               <div class="tl-card">
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div class="tl-top">
                   <span class="tl-action">{{ formatAction(h.action) }}</span>
-                  <span class="tl-meta">{{ h.timestamp | date:'MMM d, y · HH:mm' }}</span>
+                  <span class="tl-time">{{ h.timestamp | date:'MMM d, y · HH:mm' }}</span>
                 </div>
-                <p class="tl-meta">by {{ h.performedBy }}</p>
+                <p class="tl-by">by {{ h.performedBy }}</p>
                 @if (h.previousValue || h.newValue) {
                   <div class="tl-change">
-                    @if (h.previousValue) { <span class="tl-val tl-old">{{ h.previousValue }}</span> }
-                    @if (h.previousValue && h.newValue) { <mat-icon style="font-size:14px;width:14px;height:14px;color:#94a3b8;">arrow_forward</mat-icon> }
-                    @if (h.newValue) { <span class="tl-val tl-new">{{ h.newValue }}</span> }
+                    @if (h.previousValue) {
+                      <span class="tl-val tl-old">{{ h.previousValue }}</span>
+                      <mat-icon style="font-size:14px;width:14px;height:14px;color:#94a3b8">arrow_forward</mat-icon>
+                    }
+                    @if (h.newValue) {
+                      <span class="tl-val tl-new">{{ h.newValue }}</span>
+                    }
                   </div>
                 }
-                @if (h.notes) { <p style="font-size:11.5px;color:#94a3b8;margin:4px 0 0;font-style:italic;">{{ h.notes }}</p> }
+                @if (h.notes) {
+                  <p class="tl-notes">{{ h.notes }}</p>
+                }
               </div>
             </div>
           }
@@ -224,11 +345,58 @@
   </div>
 }
 
-<!-- ── Change Status Dialog ────────────────────────────────────────────── -->
+<!-- ── Document Preview Modal ──────────────────────────────────────── -->
+@if (previewDoc) {
+  <div class="preview-backdrop" (click)="closePreview()">
+    <div class="preview-modal" (click)="$event.stopPropagation()">
+      <div class="preview-header">
+        <div class="preview-title-row">
+          <div class="doc-file-icon" [style.background]="fileIconBg(previewDoc.contentType)" style="width:32px;height:32px;">
+            <mat-icon [style.color]="fileIconColor(previewDoc.contentType)" style="font-size:16px;width:16px;height:16px;">{{ fileIcon(previewDoc.contentType) }}</mat-icon>
+          </div>
+          <div>
+            <p class="preview-filename">{{ previewDoc.originalFileName }}</p>
+            <p class="preview-meta">{{ previewDoc.documentType }} · {{ previewDoc.fileSizeFormatted }}</p>
+          </div>
+        </div>
+        <div class="preview-header-actions">
+          <a mat-stroked-button (click)="downloadDocument(previewDoc, $event)">
+            <mat-icon>download</mat-icon> Download
+          </a>
+          <button mat-icon-button (click)="closePreview()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+      <div class="preview-body">
+        @if (previewDoc.contentType.includes('image')) {
+          <img [src]="getDownloadUrl(previewDoc.id)" class="preview-img"
+               alt="{{ previewDoc.originalFileName }}" />
+        } @else if (previewDoc.contentType.includes('pdf')) {
+          <iframe [src]="previewUrl" class="preview-iframe"
+                  [title]="previewDoc.originalFileName"></iframe>
+        } @else {
+          <div class="preview-unsupported">
+            <mat-icon>insert_drive_file</mat-icon>
+            <p>Preview not available for this file type.</p>
+            <a mat-raised-button color="primary" (click)="downloadDocument(previewDoc, $event)">
+              <mat-icon>download</mat-icon> Download to view
+            </a>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── Change Status Dialog ─────────────────────────────────────────── -->
 @if (showStatusDialog) {
   <div class="dialog-backdrop" (click)="showStatusDialog=false">
     <div class="dialog-card" (click)="$event.stopPropagation()">
-      <div class="dialog-header"><h3>Change Asset Status</h3><button mat-icon-button (click)="showStatusDialog=false"><mat-icon>close</mat-icon></button></div>
+      <div class="dialog-header">
+        <h3>Change Asset Status</h3>
+        <button mat-icon-button (click)="showStatusDialog=false"><mat-icon>close</mat-icon></button>
+      </div>
       <div class="dialog-body">
         <form [formGroup]="statusForm" class="flex flex-col gap-3">
           <mat-form-field appearance="outline" class="w-full">
@@ -246,18 +414,21 @@
       <div class="dialog-footer">
         <button mat-stroked-button (click)="showStatusDialog=false">Cancel</button>
         <button mat-raised-button color="primary" [disabled]="saving" (click)="submitStatusChange()">
-          @if (saving) { <mat-spinner diameter="16" class="inline-block mr-2"></mat-spinner> } Update Status
+          @if (saving) { <mat-spinner diameter="16" class="inline-block mr-1"></mat-spinner> } Update Status
         </button>
       </div>
     </div>
   </div>
 }
 
-<!-- ── Reassign Dialog ─────────────────────────────────────────────────── -->
+<!-- ── Reassign Dialog ───────────────────────────────────────────────── -->
 @if (showAssignDialog) {
   <div class="dialog-backdrop" (click)="showAssignDialog=false">
     <div class="dialog-card" (click)="$event.stopPropagation()">
-      <div class="dialog-header"><h3>Reassign Asset</h3><button mat-icon-button (click)="showAssignDialog=false"><mat-icon>close</mat-icon></button></div>
+      <div class="dialog-header">
+        <h3>Reassign Asset</h3>
+        <button mat-icon-button (click)="showAssignDialog=false"><mat-icon>close</mat-icon></button>
+      </div>
       <div class="dialog-body">
         <form [formGroup]="assignForm" class="flex flex-col gap-3">
           <mat-form-field appearance="outline" class="w-full">
@@ -275,22 +446,30 @@
       <div class="dialog-footer">
         <button mat-stroked-button (click)="showAssignDialog=false">Cancel</button>
         <button mat-raised-button color="primary" [disabled]="saving" (click)="submitAssign()">
-          @if (saving) { <mat-spinner diameter="16" class="inline-block mr-2"></mat-spinner> } Reassign
+          @if (saving) { <mat-spinner diameter="16" class="inline-block mr-1"></mat-spinner> } Reassign
         </button>
       </div>
     </div>
   </div>
 }
 
-<!-- ── Upload Dialog ───────────────────────────────────────────────────── -->
+<!-- ── Upload Dialog ────────────────────────────────────────────────── -->
 @if (showUploadDialog && pendingFile) {
   <div class="dialog-backdrop" (click)="showUploadDialog=false; pendingFile=null">
     <div class="dialog-card" (click)="$event.stopPropagation()">
-      <div class="dialog-header"><h3>Upload Document</h3><button mat-icon-button (click)="showUploadDialog=false;pendingFile=null"><mat-icon>close</mat-icon></button></div>
+      <div class="dialog-header">
+        <h3>Upload Document</h3>
+        <button mat-icon-button (click)="showUploadDialog=false; pendingFile=null"><mat-icon>close</mat-icon></button>
+      </div>
       <div class="dialog-body">
-        <div style="display:flex;align-items:center;gap:10px;background:#f8fafc;border-radius:8px;padding:10px 14px;margin-bottom:16px;">
-          <mat-icon style="color:#6366f1;">insert_drive_file</mat-icon>
-          <span style="font-size:13px;font-weight:500;color:#334155;">{{ pendingFile.name }}</span>
+        <div class="pending-file-row">
+          <div class="doc-file-icon" [style.background]="fileIconBg(pendingFileType)" style="width:40px;height:40px">
+            <mat-icon [style.color]="fileIconColor(pendingFileType)" style="font-size:20px;width:20px;height:20px">{{ fileIcon(pendingFileType) }}</mat-icon>
+          </div>
+          <div>
+            <p style="font-size:13.5px;font-weight:600;color:#0f172a;margin:0">{{ pendingFile.name }}</p>
+            <p style="font-size:12px;color:#94a3b8;margin:2px 0 0">{{ (pendingFile.size / 1024).toFixed(1) }} KB</p>
+          </div>
         </div>
         <form [formGroup]="uploadForm" class="flex flex-col gap-3">
           <mat-form-field appearance="outline" class="w-full">
@@ -298,6 +477,9 @@
             <mat-select formControlName="documentType">
               @for (t of docTypes; track t) { <mat-option [value]="t">{{ t }}</mat-option> }
             </mat-select>
+            @if (uploadForm.get('documentType')?.hasError('required') && uploadForm.get('documentType')?.touched) {
+              <mat-error>Required</mat-error>
+            }
           </mat-form-field>
           <mat-form-field appearance="outline" class="w-full">
             <mat-label>Description (optional)</mat-label>
@@ -307,7 +489,9 @@
       </div>
       <div class="dialog-footer">
         <button mat-stroked-button (click)="showUploadDialog=false; pendingFile=null">Cancel</button>
-        <button mat-raised-button color="primary" [disabled]="uploadForm.invalid" (click)="confirmUpload()">Upload</button>
+        <button mat-raised-button color="primary" [disabled]="uploadForm.invalid" (click)="confirmUpload()">
+          <mat-icon>upload</mat-icon> Upload
+        </button>
       </div>
     </div>
   </div>
