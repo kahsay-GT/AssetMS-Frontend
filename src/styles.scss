@@ -369,3 +369,15 @@ mat-sidenav.app-sidebar {
   width: 256px;
   transition: width 0.25s cubic-bezier(.4,0,.2,1) !important;
 }
+
+/* ── Operations column header ───────────────────────────────────────────── */
+.ops-header {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  color: #64748b !important;
+  text-align: right !important;
+  padding-right: 8px !important;
+  white-space: nowrap;
+}
