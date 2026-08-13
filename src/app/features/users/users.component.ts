@@ -92,7 +92,7 @@ const ROLE_COLORS: Record<string, string> = { Administrator: '#dc2626', Manager:
       </ng-container>
 
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef></th>
+        <th mat-header-cell *matHeaderCellDef class="ops-header">Operations</th>
         <td mat-cell *matCellDef="let u">
           <div class="row-actions">
             <button mat-icon-button matTooltip="Edit" (click)="openEdit(u)"><mat-icon>edit</mat-icon></button>
@@ -102,6 +102,7 @@ const ROLE_COLORS: Record<string, string> = { Administrator: '#dc2626', Manager:
             } @else {
               <button mat-icon-button matTooltip="Reactivate" (click)="toggle(u)" style="color:#059669;"><mat-icon>check_circle</mat-icon></button>
             }
+            <button mat-icon-button matTooltip="Delete permanently" (click)="deleteUser(u)" style="color:#ef4444;"><mat-icon>delete_outline</mat-icon></button>
           </div>
         </td>
       </ng-container>
@@ -183,6 +184,7 @@ const ROLE_COLORS: Record<string, string> = { Administrator: '#dc2626', Manager:
     .role-badge { font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em; }
     .row-actions { display:flex;gap:2px;justify-content:flex-end;opacity:0;transition:opacity .15s; }
     tr:hover .row-actions { opacity:1; }
+    .ops-header { font-size:11px !important;font-weight:700 !important;text-transform:uppercase;letter-spacing:.08em;color:#64748b !important;text-align:right;padding-right:8px !important; }
   `]
 })
 export class UsersComponent implements OnInit {
@@ -260,6 +262,23 @@ export class UsersComponent implements OnInit {
         (u.isActive ? this.svc.deactivate(u.id) : this.svc.reactivate(u.id))
           .subscribe({ next:()=>{ this.notify.success(`User ${u.isActive?'deactivated':'reactivated'}.`); this.load(); }, error:e=>this.notify.apiError(e) });
       });
+  }
+
+  deleteUser(u: User) {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Delete User',
+        message: `Permanently delete ${u.fullName}? This cannot be undone.`,
+        confirmText: 'Delete',
+        confirmColor: 'warn'
+      }
+    }).afterClosed().subscribe(ok => {
+      if (!ok) return;
+      this.svc.delete(u.id).subscribe({
+        next: () => { this.notify.success(`${u.fullName} deleted.`); this.load(); },
+        error: e => this.notify.apiError(e)
+      });
+    });
   }
 
   initials(u: User) { return (u.firstName?.[0]??'') + (u.lastName?.[0]??''); }

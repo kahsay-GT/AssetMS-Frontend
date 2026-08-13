@@ -172,7 +172,7 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
           </ng-container>
 
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef></th>
+            <th mat-header-cell *matHeaderCellDef class="ops-header">Operations</th>
             <td mat-cell *matCellDef="let row">
               <div class="row-actions">
                 <a mat-icon-button [routerLink]="['/assets', row.id]" matTooltip="View details">
@@ -184,8 +184,13 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
                   </a>
                 }
                 @if (canAdmin && !row.isArchived) {
-                  <button mat-icon-button matTooltip="Archive" (click)="archiveAsset(row)" class="danger-btn">
+                  <button mat-icon-button matTooltip="Archive" (click)="archiveAsset(row); $event.stopPropagation()" class="danger-btn">
                     <mat-icon>archive</mat-icon>
+                  </button>
+                }
+                @if (canAdmin) {
+                  <button mat-icon-button matTooltip="Delete permanently" (click)="deleteAsset(row); $event.stopPropagation()" style="color:#ef4444;">
+                    <mat-icon>delete_outline</mat-icon>
                   </button>
                 }
               </div>
@@ -217,6 +222,13 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
     .filter-search  { flex: 1; min-width: 220px; }
     .filter-select  { width: 160px; }
     .clear-btn      { height: 40px; flex-shrink: 0; }
+
+    .ops-header {
+      font-size: 11px !important; font-weight: 700 !important;
+      text-transform: uppercase; letter-spacing: .08em;
+      color: #64748b !important; text-align: right;
+      padding-right: 8px !important;
+    }
 
     .table-loading {
       display: flex; flex-direction: column; align-items: center;
@@ -263,9 +275,7 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
     .row-actions { display: flex; gap: 2px; justify-content: flex-end; opacity: 0; transition: opacity 0.15s; }
     tr:hover .row-actions { opacity: 1; }
     .danger-btn { color: #dc2626 !important; }
-
     .archived-row { opacity: 0.45; }
-
     ::ng-deep .mat-mdc-row { cursor: pointer; }
   `]
 })
@@ -339,10 +349,30 @@ export class AssetListComponent implements OnInit {
 
   archiveAsset(a: AssetListItem): void {
     this.dialog.open(ConfirmDialogComponent, {
-      data: { title: 'Archive Asset', message: `Archive "${a.name}"?`, confirmText: 'Archive', confirmColor: 'warn' }
+      data: { title: 'Archive Asset', message: `Archive "${a.name}"? It can be restored later.`, confirmText: 'Archive', confirmColor: 'warn' }
     }).afterClosed().subscribe(ok => {
       if (!ok) return;
-      this.assetSvc.archiveAsset(a.id).subscribe({ next: () => { this.notify.success('Asset archived.'); this.loadAssets(); }, error: e => this.notify.apiError(e) });
+      this.assetSvc.archiveAsset(a.id).subscribe({
+        next: () => { this.notify.success('Asset archived.'); this.loadAssets(); },
+        error: e => this.notify.apiError(e)
+      });
+    });
+  }
+
+  deleteAsset(a: AssetListItem): void {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Delete Asset',
+        message: `Permanently delete "${a.name}" (${a.assetNumber})? This cannot be undone.`,
+        confirmText: 'Delete',
+        confirmColor: 'warn'
+      }
+    }).afterClosed().subscribe(ok => {
+      if (!ok) return;
+      this.assetSvc.deleteAsset(a.id).subscribe({
+        next: () => { this.notify.success('Asset permanently deleted.'); this.loadAssets(); },
+        error: e => this.notify.apiError(e)
+      });
     });
   }
 

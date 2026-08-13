@@ -78,13 +78,14 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
       </ng-container>
 
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef></th>
+        <th mat-header-cell *matHeaderCellDef class="ops-header">Operations</th>
         <td mat-cell *matCellDef="let c">
           <div class="row-actions">
             <button mat-icon-button matTooltip="Edit" (click)="openEdit(c)"><mat-icon>edit</mat-icon></button>
             @if (c.isActive) {
               <button mat-icon-button matTooltip="Archive" (click)="archive(c)" style="color:#dc2626;"><mat-icon>archive</mat-icon></button>
             }
+            <button mat-icon-button matTooltip="Delete permanently" (click)="deleteCategory(c)" style="color:#ef4444;"><mat-icon>delete_outline</mat-icon></button>
           </div>
         </td>
       </ng-container>
@@ -128,7 +129,7 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
   </div>
 }
   `,
-  styles: [`.mb-5{margin-bottom:20px;} .row-actions{display:flex;gap:2px;justify-content:flex-end;opacity:0;transition:opacity .15s;} tr:hover .row-actions{opacity:1;}`]
+  styles: [`.mb-5{margin-bottom:20px;} .row-actions{display:flex;gap:2px;justify-content:flex-end;opacity:0;transition:opacity .15s;} tr:hover .row-actions{opacity:1;} .ops-header{font-size:11px !important;font-weight:700 !important;text-transform:uppercase;letter-spacing:.08em;color:#64748b !important;text-align:right;padding-right:8px !important;}`]
 })
 export class CategoriesComponent implements OnInit {
   private svc    = inject(CategoryService);
@@ -172,10 +173,31 @@ export class CategoriesComponent implements OnInit {
   }
 
   archive(c: AssetCategory) {
-    this.dialog.open(ConfirmDialogComponent, { data:{ title:'Archive Category', message:`Archive "${c.name}"?`, confirmText:'Archive', confirmColor:'warn' } })
-      .afterClosed().subscribe(ok => {
-        if (!ok) return;
-        this.svc.archive(c.id).subscribe({ next:()=>{ this.notify.success('Category archived.'); this.load(); }, error:e=>this.notify.apiError(e) });
+    this.dialog.open(ConfirmDialogComponent, {
+      data: { title: 'Archive Category', message: `Archive "${c.name}"? It will no longer appear in new asset forms.`, confirmText: 'Archive', confirmColor: 'warn' }
+    }).afterClosed().subscribe(ok => {
+      if (!ok) return;
+      this.svc.archive(c.id).subscribe({
+        next: () => { this.notify.success('Category archived.'); this.load(); },
+        error: e => this.notify.apiError(e)
       });
+    });
+  }
+
+  deleteCategory(c: AssetCategory) {
+    this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Delete Category',
+        message: `Permanently delete "${c.name}"? This cannot be undone. All assets must be removed or reassigned first.`,
+        confirmText: 'Delete',
+        confirmColor: 'warn'
+      }
+    }).afterClosed().subscribe(ok => {
+      if (!ok) return;
+      this.svc.delete(c.id).subscribe({
+        next: () => { this.notify.success('Category permanently deleted.'); this.load(); },
+        error: e => this.notify.apiError(e)
+      });
+    });
   }
 }
