@@ -114,9 +114,9 @@ import { PageHeaderComponent } from '../../../shared/components/page-header/page
                 <mat-datepicker #dp></mat-datepicker>
               </mat-form-field>
               <mat-form-field appearance="outline">
-                <mat-label>Purchase Cost (USD)</mat-label>
+                <mat-label>Purchase Cost (ETB)</mat-label>
                 <input matInput type="number" formControlName="purchaseCost" min="0" step="0.01" />
-                <span matTextPrefix>$&nbsp;</span>
+                <span matTextPrefix>ETB&nbsp;</span>
               </mat-form-field>
             </div>
 

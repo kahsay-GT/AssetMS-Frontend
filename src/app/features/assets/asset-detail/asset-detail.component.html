@@ -118,7 +118,7 @@
                 <div class="field">
                   <span class="field-label">Purchase Cost</span>
                   <span class="field-value" style="font-size:20px;font-weight:800;color:#15803d;">
-                    {{ asset.purchaseCost != null ? (asset.purchaseCost | currency) : '—' }}
+                    {{ asset.purchaseCost != null ? formatBirr(asset.purchaseCost) : '—' }}
                   </span>
                 </div>
               </div>

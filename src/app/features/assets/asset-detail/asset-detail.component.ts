@@ -376,6 +376,13 @@ export class AssetDetailComponent implements OnInit {
 
   formatAction(a: string): string { return a.replace(/([A-Z])/g, ' $1').trim(); }
 
+  formatBirr(amount: number): string {
+    return 'ETB ' + amount.toLocaleString('en-ET', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
   private refresh(): void {
     if (!this.asset) return;
     const id = this.asset.id;
