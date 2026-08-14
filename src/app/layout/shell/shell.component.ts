@@ -473,9 +473,10 @@ export class ShellComponent {
     {
       label: 'Administration',
       items: [
-        { label: 'Users',        icon: 'people',       route: '/users',      roles: ['Administrator'] },
-        { label: 'Categories',   icon: 'category',     route: '/categories', roles: ['Administrator'] },
-        { label: 'Audit Logs',   icon: 'manage_search',route: '/audit',      roles: ['Administrator'] },
+        { label: 'Users',        icon: 'people',               route: '/users',      roles: ['Administrator'] },
+        { label: 'Roles',        icon: 'admin_panel_settings', route: '/roles',      roles: ['Administrator'] },
+        { label: 'Categories',   icon: 'category',             route: '/categories', roles: ['Administrator'] },
+        { label: 'Audit Logs',   icon: 'manage_search',        route: '/audit',      roles: ['Administrator'] },
       ]
     }
   ];
