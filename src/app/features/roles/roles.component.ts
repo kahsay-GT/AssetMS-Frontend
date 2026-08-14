@@ -60,7 +60,7 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
           </div>
           @if (!isBuiltIn(role.name)) {
             <div class="role-actions">
-              <button mat-icon-button matTooltip="Edit" (click)="openEdit(role); $event.stopPropagation()">
+              <button mat-icon-button matTooltip="Edit permissions" (click)="openEdit(role); $event.stopPropagation()">
                 <mat-icon>edit</mat-icon>
               </button>
               <button mat-icon-button matTooltip="Delete" color="warn"
@@ -69,6 +69,11 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
               </button>
             </div>
           } @else {
+            <div class="role-actions">
+              <button mat-icon-button matTooltip="Edit permissions" (click)="openEdit(role); $event.stopPropagation()">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </div>
             <span class="built-in-badge">Built-in</span>
           }
         </div>
@@ -112,6 +117,10 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
           <button mat-raised-button color="primary" (click)="openEdit(selectedRole)">
             <mat-icon>edit</mat-icon> Edit Permissions
           </button>
+        } @else {
+          <button mat-raised-button color="primary" (click)="openEdit(selectedRole)">
+            <mat-icon>edit</mat-icon> Edit Permissions
+          </button>
         }
       </div>
 
@@ -129,7 +138,10 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
             </div>
             <div class="perm-list">
               @for (perm of group.permissions; track perm.id) {
-                <div class="perm-item" [class.perm-granted]="hasPermission(selectedRole, perm)">
+                <div class="perm-item" [class.perm-granted]="hasPermission(selectedRole, perm)"
+                     (click)="quickToggle(selectedRole, perm)"
+                     [matTooltip]="hasPermission(selectedRole, perm) ? 'Click to revoke' : 'Click to grant'"
+                     matTooltipPosition="left">
                   <div class="perm-check">
                     @if (hasPermission(selectedRole, perm)) {
                       <mat-icon class="perm-check-icon granted">check_circle</mat-icon>
@@ -142,10 +154,14 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
                     <span class="perm-key">{{ perm.name }}</span>
                   </div>
                   @if (perm.description) {
-                    <span class="perm-desc-tooltip" [matTooltip]="perm.description">
+                    <span class="perm-desc-tooltip" [matTooltip]="perm.description"
+                      (click)="$event.stopPropagation()">
                       <mat-icon>info_outline</mat-icon>
                     </span>
                   }
+                  <mat-icon class="perm-toggle-hint">
+                    {{ hasPermission(selectedRole, perm) ? 'remove_circle_outline' : 'add_circle_outline' }}
+                  </mat-icon>
                 </div>
               }
             </div>
@@ -368,10 +384,11 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
       padding: 9px 16px;
       border-bottom: 1px solid #f8fafc;
       transition: background .1s;
+      cursor: pointer;
       &:last-child { border-bottom: none; }
-      &:hover { background: #f8fafc; }
+      &:hover { background: #f1f5f9; }
     }
-    .perm-granted { background: #f0fdf4 !important; }
+    .perm-granted { background: #f0fdf4 !important; &:hover { background: #dcfce7 !important; } }
     .perm-check { flex-shrink: 0; }
     .perm-check-icon {
       font-size: 17px !important; width: 17px !important; height: 17px !important;
@@ -382,6 +399,13 @@ import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/c
     .perm-display-name { display: block; font-size: 12.5px; font-weight: 500; color: #334155; }
     .perm-key { display: block; font-size: 10.5px; color: #94a3b8; font-family: monospace; margin-top: 1px; }
     .perm-desc-tooltip { color: #94a3b8; cursor: help; mat-icon { font-size: 14px !important; width: 14px !important; height: 14px !important; } }
+    .perm-toggle-hint {
+      font-size: 15px !important; width: 15px !important; height: 15px !important;
+      color: #cbd5e1; opacity: 0; transition: opacity .15s;
+    }
+    .perm-item:hover .perm-toggle-hint { opacity: 1; }
+    .perm-granted .perm-toggle-hint { color: #f87171; }
+    .perm-item:not(.perm-granted):hover .perm-toggle-hint { color: #4ade80; }
 
     /* ── Dialog ──────────────────────────────────────────────────── */
     .role-dialog {
@@ -585,6 +609,27 @@ export class RolesComponent implements OnInit {
 
   isBuiltIn(name: string): boolean {
     return ['Administrator', 'Manager', 'Viewer'].includes(name);
+  }
+
+  // Quick-toggle a single permission directly from the matrix view
+  quickToggle(role: RoleDto, perm: PermissionDto): void {
+    const has = role.permissionIds.includes(perm.id);
+    const updated = has
+      ? role.permissionIds.filter(id => id !== perm.id)
+      : [...role.permissionIds, perm.id];
+
+    this.svc.updateRole(role.id, {
+      description: role.description,
+      permissionIds: updated
+    }).subscribe({
+      next: updated => {
+        const idx = this.roles.findIndex(r => r.id === role.id);
+        if (idx >= 0) this.roles[idx] = updated;
+        if (this.selectedRole?.id === role.id) this.selectedRole = updated;
+        this.notify.success(has ? `"${perm.displayName}" revoked.` : `"${perm.displayName}" granted.`);
+      },
+      error: e => this.notify.apiError(e)
+    });
   }
 
   // ── Styling helpers ────────────────────────────────────────────────────────
